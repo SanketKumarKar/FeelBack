@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeelBack - Relive Your Favorite Viral Moments</title>
+    <meta name="description" content="Instantly generate, remix, and share the trends, memes, and memories that defined every era. FeelBack brings the past to life.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://feelback.app/">
+    <meta property="og:title" content="FeelBack - Relive Your Favorite Viral Moments">
+    <meta property="og:description" content="Instantly generate, remix, and share the trends, memes, and memories that defined every era.">
+    <meta property="og:image" content="./logo.jpeg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://feelback.app/">
+    <meta property="twitter:title" content="FeelBack - Relive Your Favorite Viral Moments">
+    <meta property="twitter:description" content="Instantly generate, remix, and share the trends, memes, and memories that defined every era.">
+    <meta property="twitter:image" content="./logo.jpeg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="./logo.jpeg" type="image/jpeg">
+    
+    <!-- Fallback styles to ensure hero is visible -->
+    <style>
+        /* Critical CSS for hero visibility */
+        .hero-content, .hero-title, .hero-subtitle, .hero-cta, .logo-container {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        body {
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky CTA Button -->
+    <div class="sticky-cta" id="stickyCTA">
+        <button class="cta-button pulse">Get Started Free</button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="retro-grid"></div>
+        <div class="floating-elements">
+            <div class="mood-bubble bubble-1">😎</div>
+            <div class="mood-bubble bubble-2">🎵</div>
+            <div class="mood-bubble bubble-3">📱</div>
+            <div class="mood-bubble bubble-4">✨</div>
+            <div class="mood-bubble bubble-5">🎮</div>
+        </div>
+        
+        <div class="hero-content">
+            <div class="logo-container">
+                <img src="logo.jpeg" alt="FeelBack Logo" class="logo">
+                <div class="crt-scanlines"></div>
+            </div>
+            
+            <h1 class="hero-title">
+                <span class="glitch-text" data-text="Relive Your Favorite">Relive Your Favorite</span>
+                <span class="neon-text">Viral Moments</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                Instantly generate, remix, and share the trends, memes, and memories that defined every era. 
+                <span class="highlight">FeelBack brings the past to life.</span>
+            </p>
+            
+            <div class="hero-cta">
+                <button class="primary-cta">
+                    <span>Try FeelBack Free</span>
+                    <div class="button-glow"></div>
+                </button>
+                <button class="secondary-cta">
+                    <span>Watch Demo</span>
+                </button>
+            </div>
+            
+            <div class="social-proof-mini">
+                <div class="counter">
+                    <span class="count" id="experienceCounter">127,843</span>
+                    <span class="label">Nostalgia Experiences Generated</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="vinyl-player">
+            <div class="vinyl-record spinning">
+                <div class="vinyl-hole"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="step" data-step="1">
+                    <div class="step-icon">
+                        <div class="cassette-tape">
+                            <div class="cassette-reel left"></div>
+                            <div class="cassette-reel right"></div>
+                        </div>
+                    </div>
+                    <h3>Describe Your Mood</h3>
+                    <p>Tell us how you're feeling or pick any era from the past</p>
+                </div>
+                
+                <div class="step" data-step="2">
+                    <div class="step-icon">
+                        <div class="floppy-disk">
+                            <div class="floppy-label"></div>
+                            <div class="floppy-slider"></div>
+                        </div>
+                    </div>
+                    <h3>AI Magic Happens</h3>
+                    <p>Our AI generates viral trends, memes, and music from that perfect moment</p>
+                </div>
+                
+                <div class="step" data-step="3">
+                    <div class="step-icon">
+                        <div class="disco-ball">
+                            <div class="disco-sparkle"></div>
+                        </div>
+                    </div>
+                    <h3>Remix & Share</h3>
+                    <p>Customize your experience and challenge friends to join the nostalgia</p>
+                </div>
+            </div>
+            
+            <div class="demo-video">
+                <div class="video-placeholder">
+                    <div class="play-button">
+                        <div class="play-icon"></div>
+                    </div>
+                    <div class="video-text">Watch FeelBack in Action</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Why FeelBack?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <div class="polaroid-stack">
+                            <div class="polaroid p1"></div>
+                            <div class="polaroid p2"></div>
+                            <div class="polaroid p3"></div>
+                        </div>
+                    </div>
+                    <h3>Era-Based Nostalgia</h3>
+                    <p>Journey through decades of viral moments, from the 80s to today</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <div class="gameboy">
+                            <div class="gameboy-screen"></div>
+                            <div class="gameboy-buttons"></div>
+                        </div>
+                    </div>
+                    <h3>Viral Challenges</h3>
+                    <p>Create and share challenges based on iconic trends and memes</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <div class="vhs-tape">
+                            <div class="vhs-label"></div>
+                            <div class="vhs-reels"></div>
+                        </div>
+                    </div>
+                    <h3>Instant Sharing</h3>
+                    <p>Share your nostalgic moments across all social platforms instantly</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <div class="lava-lamp">
+                            <div class="lava-blob blob1"></div>
+                            <div class="lava-blob blob2"></div>
+                            <div class="lava-blob blob3"></div>
+                        </div>
+                    </div>
+                    <h3>Memory Rooms</h3>
+                    <p>Create collaborative spaces where friends relive memories together</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Section -->
+    <section class="social-proof" id="social-proof">
+        <div class="container">
+            <h2 class="section-title">Join the Nostalgia Revolution</h2>
+            
+            <div class="testimonials-carousel">
+                <div class="testimonial active">
+                    <div class="testimonial-content">
+                        <p>"FeelBack made my friends and I cry-laugh for hours! It's like having a time machine in your pocket."</p>
+                        <div class="testimonial-author">
+                            <span class="name">Sarah M.</span>
+                            <span class="title">Gen Z Trendsetter</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"Finally, an app that gets nostalgia right. The AI perfectly captured the vibe of my favorite 90s memories!"</p>
+                        <div class="testimonial-author">
+                            <span class="name">Mike K.</span>
+                            <span class="title">90s Kid</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"My TikTok engagement went through the roof with FeelBack content. This app is a content creator's dream!"</p>
+                        <div class="testimonial-author">
+                            <span class="name">Alex R.</span>
+                            <span class="title">Content Creator</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-number" data-target="500000">0</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" data-target="2500000">0</div>
+                    <div class="stat-label">Memories Created</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" data-target="98">0</div>
+                    <div class="stat-label">% User Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nostalgia Timeline -->
+    <section class="nostalgia-timeline" id="timeline">
+        <div class="container">
+            <h2 class="section-title">A Journey Through Viral History</h2>
+            <div class="timeline-container">
+                <div class="timeline-track" id="timelineTrack">
+                    <div class="timeline-item" data-year="1995">
+                        <div class="timeline-content">
+                            <div class="year">1995</div>
+                            <div class="trend">Dancing Baby</div>
+                            <div class="preview">🕺👶</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-year="1999">
+                        <div class="timeline-content">
+                            <div class="year">1999</div>
+                            <div class="trend">Hamster Dance</div>
+                            <div class="preview">🐹💃</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-year="2007">
+                        <div class="timeline-content">
+                            <div class="year">2007</div>
+                            <div class="trend">Rickroll</div>
+                            <div class="preview">🎵😂</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-year="2012">
+                        <div class="timeline-content">
+                            <div class="year">2012</div>
+                            <div class="trend">Gangnam Style</div>
+                            <div class="preview">🐎💃</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-year="2016">
+                        <div class="timeline-content">
+                            <div class="year">2016</div>
+                            <div class="trend">Mannequin Challenge</div>
+                            <div class="preview">🧍‍♀️⏸️</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-year="2020">
+                        <div class="timeline-content">
+                            <div class="year">2020</div>
+                            <div class="trend">Everything is Cake</div>
+                            <div class="preview">🎂🤯</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-year="2023">
+                        <div class="timeline-content">
+                            <div class="year">2023</div>
+                            <div class="trend">AI Boyfriend</div>
+                            <div class="preview">🤖💕</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conversion Section -->
+    <section class="conversion" id="conversion">
+        <div class="container">
+            <div class="conversion-content">
+                <h2>Start Your Nostalgia Journey</h2>
+                <p>Join thousands who are already reliving their favorite viral moments</p>
+                
+                <form class="signup-form">
+                    <div class="form-group">
+                        <input type="email" placeholder="Enter your email" required>
+                        <button type="submit" class="submit-btn">
+                            <span>Get Started</span>
+                        </button>
+                    </div>
+                    <div class="social-login">
+                        <button type="button" class="social-btn google">
+                            <span>Continue with Google</span>
+                        </button>
+                        <button type="button" class="social-btn apple">
+                            <span>Continue with Apple</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="trust-badges">
+                    <div class="badge">🔒 Privacy Protected</div>
+                    <div class="badge">📱 No Download Required</div>
+                    <div class="badge">✨ Free to Start</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="footer-logo-main">
+                        <img src="logo.jpeg" alt="FeelBack">
+                        <span>FeelBack</span>
+                    </div>
+                    <p class="footer-description">
+                        Relive your favorite viral moments and create new memories with the ultimate nostalgia app. From retro classics to modern trends.
+                    </p>
+                    <div class="footer-newsletter">
+                        <h4>Stay in the Loop</h4>
+                        <p>Get the latest trends and updates</p>
+                        <form class="newsletter-form">
+                            <input type="email" class="newsletter-input" placeholder="Your email">
+                            <button type="submit" class="newsletter-btn">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#how-it-works" aria-label="How It Works">How It Works</a>
+                    <a href="#features" aria-label="Features">Features</a>
+                    <a href="#timeline" aria-label="Timeline">Timeline</a>
+                    <a href="#" aria-label="About">About Us</a>
+                    <a href="#" aria-label="Privacy Policy">Privacy Policy</a>
+                    <a href="#" aria-label="Terms">Terms of Service</a>
+                    <a href="#" aria-label="Contact">Contact</a>
+                </div>
+                
+                <div class="footer-social">
+                    <h4>Follow Us</h4>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Twitter" class="social-icon">🐦</a>
+                        <a href="#" aria-label="Instagram" class="social-icon">📷</a>
+                        <a href="#" aria-label="TikTok" class="social-icon">🎵</a>
+                        <a href="#" aria-label="YouTube" class="social-icon">📺</a>
+                        <a href="#" aria-label="Discord" class="social-icon">💬</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 FeelBack. All rights reserved. Made with ❤️ for nostalgia lovers everywhere.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
