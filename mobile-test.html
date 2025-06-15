@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeelBack Mobile Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #0a0a0a;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .responsive-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .test-box {
+            padding: 10px;
+            background: linear-gradient(135deg, #FFB84D, #E94A4A);
+            color: black;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .viewport-info {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        @media (max-width: 768px) {
+            .mobile-only { display: block; }
+            .desktop-only { display: none; }
+        }
+        @media (min-width: 769px) {
+            .mobile-only { display: none; }
+            .desktop-only { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <h1>FeelBack Mobile Responsiveness Test</h1>
+    
+    <div class="test-section">
+        <h2>Viewport Information</h2>
+        <div class="viewport-info" id="viewportInfo">
+            Loading viewport info...
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Device Detection</h2>
+        <div class="mobile-only">✅ Mobile View Active</div>
+        <div class="desktop-only">💻 Desktop View Active</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Responsive Grid Test</h2>
+        <div class="responsive-test">
+            <div class="test-box">Box 1</div>
+            <div class="test-box">Box 2</div>
+            <div class="test-box">Box 3</div>
+            <div class="test-box">Box 4</div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Touch Test</h2>
+        <div id="touchTest">Touch detection: Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Navigation to Main Site</h2>
+        <a href="index.html" style="color: #FFB84D; text-decoration: none; font-size: 18px;">
+            🚀 Go to FeelBack Main Site
+        </a>
+    </div>
+
+    <script>
+        function updateViewportInfo() {
+            const info = document.getElementById('viewportInfo');
+            const touchTest = document.getElementById('touchTest');
+            
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const pixelRatio = window.devicePixelRatio || 1;
+            const isTouch = 'ontouchstart' in window;
+            const orientation = width > height ? 'landscape' : 'portrait';
+            
+            info.innerHTML = `
+                Width: ${width}px<br>
+                Height: ${height}px<br>
+                Pixel Ratio: ${pixelRatio}<br>
+                Orientation: ${orientation}<br>
+                User Agent: ${navigator.userAgent.substring(0, 50)}...
+            `;
+            
+            touchTest.innerHTML = `Touch support: ${isTouch ? '✅ Yes' : '❌ No'}`;
+        }
+        
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateViewportInfo, 500);
+        });
+    </script>
+</body>
+</html>

@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initFormHandling();
     initVideoPlaceholder();
     initAdvancedInteractions();
+    initMobileOptimizations();
+    optimizeMobilePerformance();
+    initMobilePerformanceMonitoring();
+    initNetworkAwareLoading();
 });
 
 // Initialize advanced interactions
@@ -246,10 +250,6 @@ function initAnimations() {
         delay: 2
     });
 }
-        stagger: 0.2,
-        delay: 1
-    });
-}
 
 // Initialize enhanced scroll-triggered animations
 function initScrollAnimations() {
@@ -367,36 +367,107 @@ function initScrollAnimations() {
 // Initialize counters
 function initCounters() {
     // Experience counter animation
-    const targetCount = parseInt(experienceCounter.getAttribute('data-target') || '127843');
-    let currentCount = 0;
-    const increment = Math.ceil(targetCount / 100);
-    
-    function updateCounter() {
-        currentCount += increment;
-        if (currentCount > targetCount) {
-            currentCount = targetCount;
+    const experienceCounter = document.getElementById('experienceCounter');
+    if (experienceCounter) {
+        const targetCount = parseInt(experienceCounter.getAttribute('data-target') || '127843');
+        let currentCount = 0;
+        const increment = Math.ceil(targetCount / 100);
+        
+        function updateCounter() {
+            currentCount += increment;
+            if (currentCount > targetCount) {
+                currentCount = targetCount;
+            }
+            
+            experienceCounter.textContent = currentCount.toLocaleString();
+            
+            if (currentCount < targetCount) {
+                requestAnimationFrame(updateCounter);
+            }
         }
         
-        experienceCounter.textContent = currentCount.toLocaleString();
-        
-        if (currentCount < targetCount) {
-            requestAnimationFrame(updateCounter);
-        }
+        // Start counter when hero is visible
+        setTimeout(updateCounter, 2000);
     }
-    
-    // Start counter when hero is visible
-    setTimeout(updateCounter, 2000);
 
-    // Stats counters
-    const statNumbers = document.querySelectorAll('.stat-number');
-    
-    statNumbers.forEach(stat => {
-        ScrollTrigger.create({
-            trigger: stat,
-            start: 'top 80%',
-            onEnter: () => animateStatCounter(stat)
-        });
-    });
+    // Stats counters with improved triggering
+    // Wait a bit to ensure DOM is fully loaded
+    setTimeout(() => {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        if (statNumbers.length > 0) {
+            // Create multiple triggers for better reliability
+            
+            // 1. Intersection Observer with lower threshold
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !entry.target.hasAttribute('data-animated')) {
+                        animateStatCounter(entry.target);
+                        entry.target.setAttribute('data-animated', 'true');
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { 
+                threshold: 0.1,
+                rootMargin: '50px'
+            });
+            
+            // 2. Scroll-based trigger as backup
+            let scrollTriggered = false;
+            function checkScrollPosition() {
+                if (scrollTriggered) return;
+                
+                const socialProofSection = document.getElementById('social-proof');
+                if (socialProofSection) {
+                    const rect = socialProofSection.getBoundingClientRect();
+                    const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                    
+                    if (isVisible) {
+                        scrollTriggered = true;
+                        statNumbers.forEach(stat => {
+                            if (!stat.hasAttribute('data-animated')) {
+                                animateStatCounter(stat);
+                                stat.setAttribute('data-animated', 'true');
+                            }
+                        });
+                        window.removeEventListener('scroll', checkScrollPosition);
+                    }
+                }
+            }
+            
+            statNumbers.forEach((stat, index) => {
+                // ScrollTrigger (GSAP)
+                if (typeof ScrollTrigger !== 'undefined') {
+                    ScrollTrigger.create({
+                        trigger: stat,
+                        start: 'top 85%',
+                        onEnter: () => {
+                            if (!stat.hasAttribute('data-animated')) {
+                                animateStatCounter(stat);
+                                stat.setAttribute('data-animated', 'true');
+                            }
+                        }
+                    });
+                }
+                
+                // Intersection Observer
+                statsObserver.observe(stat);
+            });
+            
+            // Scroll listener as additional backup
+            window.addEventListener('scroll', checkScrollPosition);
+            
+            // Final fallback - trigger after delay if nothing else worked
+            setTimeout(() => {
+                statNumbers.forEach(stat => {
+                    if (!stat.hasAttribute('data-animated')) {
+                        animateStatCounter(stat);
+                        stat.setAttribute('data-animated', 'true');
+                    }
+                });
+            }, 5000);
+        }
+    }, 1000);
 }
 
 function animateStatCounter(element) {
@@ -404,18 +475,46 @@ function animateStatCounter(element) {
     const duration = 2000; // 2 seconds
     const startTime = Date.now();
     
+    // Add animation class for visual feedback
+    element.classList.add('animating');
+    
     function updateStat() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // Easing function
+        // Easing function for smooth animation
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
         const current = Math.floor(target * easeOutQuart);
         
-        element.textContent = current.toLocaleString();
+        // Format the number based on target value
+        if (target >= 1000000) {
+            // For millions (like 2,500,000), show as "2.5M"
+            const millions = current / 1000000;
+            element.textContent = millions.toFixed(1) + 'M';
+        } else if (target >= 100000) {
+            // For hundreds of thousands (like 500,000), show as "500K"
+            const thousands = current / 1000;
+            element.textContent = Math.floor(thousands) + 'K';
+        } else if (target >= 1000) {
+            // For thousands, show as "XK"
+            const thousands = current / 1000;
+            element.textContent = thousands.toFixed(1) + 'K';
+        } else {
+            // For smaller numbers (like 98%), show as is with potential suffix
+            element.textContent = current.toString();
+            
+            // Check if this is the satisfaction percentage
+            const label = element.nextElementSibling?.textContent;
+            if (label && label.includes('Satisfaction')) {
+                element.textContent = current + '%';
+            }
+        }
         
         if (progress < 1) {
             requestAnimationFrame(updateStat);
+        } else {
+            // Remove animation class when done
+            element.classList.remove('animating');
         }
     }
     
@@ -1010,3 +1109,370 @@ window.addEventListener('scroll', () => {
         ease: "none"
     });
 });
+
+// Mobile-specific optimizations
+function initMobileOptimizations() {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isMobile = window.innerWidth <= 768;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    if (isTouch) {
+        document.body.classList.add('touch-device');
+    }
+    
+    if (isMobile) {
+        document.body.classList.add('mobile-device');
+        
+        // Optimize animations for mobile
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotion) {
+            gsap.set('*', { animation: 'none' });
+            return;
+        }
+        
+        // Add mobile-specific interaction handlers
+        addMobileTouchFeedback();
+        optimizeScrollPerformance();
+        handleMobileKeyboard();
+        
+        // Prevent zoom on double tap for better UX
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+    }
+    
+    if (isIOS) {
+        document.body.classList.add('ios-device');
+        handleIOSSpecificOptimizations();
+    }
+    
+    // Handle orientation changes
+    window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+            initResponsiveLayout();
+        }, 500);
+    });
+    
+    // Initialize responsive layout
+    initResponsiveLayout();
+}
+
+function addMobileTouchFeedback() {
+    const interactiveElements = document.querySelectorAll(
+        '.primary-cta, .secondary-cta, .submit-btn, .newsletter-btn, .social-icon, .step, .feature-card'
+    );
+    
+    interactiveElements.forEach(element => {
+        element.addEventListener('touchstart', function(e) {
+            this.classList.add('touch-active');
+            
+            // Add haptic feedback if available
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        }, { passive: true });
+        
+        element.addEventListener('touchend', function(e) {
+            setTimeout(() => {
+                this.classList.remove('touch-active');
+            }, 150);
+        }, { passive: true });
+        
+        element.addEventListener('touchcancel', function(e) {
+            this.classList.remove('touch-active');
+        }, { passive: true });
+    });
+}
+
+function optimizeScrollPerformance() {
+    // Use passive event listeners for better scroll performance
+    let ticking = false;
+    
+    function updateScrollElements() {
+        const scrollY = window.pageYOffset;
+        
+        // Update sticky CTA visibility
+        const stickyCtA = document.getElementById('stickyCTA');
+        if (stickyCtA) {
+            if (scrollY > 200) {
+                stickyCtA.style.opacity = '1';
+                stickyCtA.style.pointerEvents = 'auto';
+            } else {
+                stickyCtA.style.opacity = '0';
+                stickyCtA.style.pointerEvents = 'none';
+            }
+        }
+        
+        ticking = false;
+    }
+    
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateScrollElements);
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', requestTick, { passive: true });
+}
+
+function handleMobileKeyboard() {
+    // Handle virtual keyboard on mobile
+    const inputs = document.querySelectorAll('input, textarea');
+    
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',
+                    inline: 'nearest'
+                });
+            }, 300);
+        });
+        
+        input.addEventListener('blur', function() {
+            // Reset viewport on keyboard close
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 300);
+        });
+    });
+}
+
+function handleIOSSpecificOptimizations() {
+    // Handle iOS safe areas
+    const style = document.createElement('style');
+    style.textContent = `
+        @supports (-webkit-touch-callout: none) {
+            .sticky-cta {
+                bottom: calc(15px + env(safe-area-inset-bottom, 0));
+            }
+            
+            .footer {
+                padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
+            }
+            
+            .hero {
+                padding-top: calc(2rem + env(safe-area-inset-top, 0));
+            }
+            
+            /* Prevent zoom on input focus */
+            input, textarea, select {
+                font-size: 16px !important;
+                transform: scale(1);
+            }
+            
+            /* Fix iOS bounce scroll */
+            body {
+                -webkit-overflow-scrolling: touch;
+                overflow-scrolling: touch;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Handle iOS viewport issues
+    const viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (viewportMeta) {
+        viewportMeta.setAttribute('content', 
+            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
+        );
+    }
+}
+
+function initResponsiveLayout() {
+    const screenWidth = window.innerWidth;
+    
+    // Adjust grid layouts based on screen size
+    const stepsContainer = document.querySelector('.steps-container');
+    const featuresGrid = document.querySelector('.features-grid');
+    
+    if (screenWidth <= 480) {
+        // Single column for very small screens
+        if (stepsContainer) stepsContainer.style.gridTemplateColumns = '1fr';
+        if (featuresGrid) featuresGrid.style.gridTemplateColumns = '1fr';
+    } else if (screenWidth <= 768) {
+        // Single column for tablets
+        if (stepsContainer) stepsContainer.style.gridTemplateColumns = '1fr';
+        if (featuresGrid) featuresGrid.style.gridTemplateColumns = '1fr';
+    } else if (screenWidth <= 1024) {
+        // Two columns for larger tablets
+        if (stepsContainer) stepsContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        if (featuresGrid) featuresGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    }
+    
+    // Optimize image loading for mobile
+    if (screenWidth <= 768) {
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            if (!img.hasAttribute('loading')) {
+                img.setAttribute('loading', 'lazy');
+            }
+            img.setAttribute('decoding', 'async');
+        });
+    }
+}
+
+// Enhanced mobile performance optimization
+function optimizeMobilePerformance() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Reduce complex animations on mobile
+        const complexAnimElements = document.querySelectorAll('.retro-grid, .floating-elements');
+        complexAnimElements.forEach(element => {
+            element.style.willChange = 'auto';
+            element.style.opacity = '0.1';
+        });
+        
+        // Optimize GSAP for mobile
+        gsap.config({
+            force3D: true,
+            nullTargetWarn: false
+        });
+        
+        // Reduce particle count for mobile
+        const moodBubbles = document.querySelectorAll('.mood-bubble');
+        moodBubbles.forEach((bubble, index) => {
+            if (index > 3) { // Keep only first 4 bubbles on mobile
+                bubble.style.display = 'none';
+            }
+        });
+        
+        // Add mobile-specific styles
+        const mobileCSS = `
+            /* Mobile touch feedback */
+            .touch-active {
+                transform: scale(0.98) !important;
+                transition: transform 0.1s ease !important;
+            }
+            
+            .touch-active.social-icon {
+                transform: scale(0.95) !important;
+                box-shadow: 0 2px 10px rgba(255, 182, 77, 0.4) !important;
+            }
+            
+            .touch-active.primary-cta,
+            .touch-active.secondary-cta {
+                transform: scale(0.96) !important;
+            }
+            
+            /* Smooth scrolling */
+            html {
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Better focus states for accessibility */
+            .primary-cta:focus,
+            .secondary-cta:focus,
+            .submit-btn:focus,
+            .newsletter-btn:focus {
+                outline: 3px solid var(--logo-orange);
+                outline-offset: 2px;
+            }
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = mobileCSS;
+        document.head.appendChild(style);
+        
+        // Optimize scroll performance
+        document.addEventListener('scroll', () => {
+            // Throttle scroll events
+            clearTimeout(window.scrollTimeout);
+            window.scrollTimeout = setTimeout(() => {
+                // Update any scroll-dependent elements here
+            }, 16); // 60fps
+        }, { passive: true });
+    }
+}
+
+// Performance monitoring for mobile devices
+function initMobilePerformanceMonitoring() {
+    if (window.innerWidth <= 768) {
+        // Monitor Core Web Vitals on mobile
+        if ('PerformanceObserver' in window) {
+            // Monitor Cumulative Layout Shift (CLS)
+            const clsObserver = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (!entry.hadRecentInput) {
+                        console.log('CLS detected:', entry.value);
+                    }
+                }
+            });
+            clsObserver.observe({ type: 'layout-shift', buffered: true });
+            
+            // Monitor First Input Delay (FID)
+            const fidObserver = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    console.log('FID:', entry.processingStart - entry.startTime);
+                }
+            });
+            fidObserver.observe({ type: 'first-input', buffered: true });
+        }
+        
+        // Monitor memory usage on mobile
+        if ('memory' in performance) {
+            setInterval(() => {
+                const memory = performance.memory;
+                if (memory.usedJSHeapSize > memory.jsHeapSizeLimit * 0.8) {
+                    console.warn('High memory usage detected on mobile');
+                    // Trigger garbage collection if needed
+                    optimizeMobilePerformance();
+                }
+            }, 30000); // Check every 30 seconds
+        }
+        
+        // Monitor battery status if available
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then((battery) => {
+                const handleBatteryChange = () => {
+                    if (battery.level < 0.2) {
+                        // Battery is low, reduce animations
+                        document.body.classList.add('low-battery-mode');
+                        gsap.globalTimeline.timeScale(0.5); // Slow down animations
+                    } else {
+                        document.body.classList.remove('low-battery-mode');
+                        gsap.globalTimeline.timeScale(1);
+                    }
+                };
+                
+                battery.addEventListener('levelchange', handleBatteryChange);
+                handleBatteryChange(); // Initial check
+            });
+        }
+    }
+}
+
+// Network-aware loading for mobile
+function initNetworkAwareLoading() {
+    if ('connection' in navigator) {
+        const connection = navigator.connection;
+        const isSlow = connection.effectiveType === 'slow-2g' || 
+                      connection.effectiveType === '2g' || 
+                      connection.effectiveType === '3g';
+        
+        if (isSlow) {
+            document.body.classList.add('slow-connection');
+            
+            // Reduce image quality and disable complex animations
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.style.filter = 'blur(1px)'; // Slight blur to reduce perceived quality
+            });
+            
+            // Disable heavy animations
+            gsap.set('.retro-grid, .floating-elements', { display: 'none' });
+            
+            console.log('Slow connection detected, optimizing experience');
+        }
+    }
+}
